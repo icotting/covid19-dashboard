@@ -1,0 +1,28 @@
+{
+  "name": "COVID-19-Lambda",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Lambda backend for my COVID-19 dashboard",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "startServer": "websiteS3Bucket=covid-dashboard nodemon src/local.js",
+    "generateData": "websiteS3Bucket=covid-dashboard node src/load-data.js"
+  },
+  "keywords": [
+    "aws",
+    "lambda"
+  ],
+  "author": "Ian Cottingham",
+  "dependencies": {
+    "aws-sdk": "^2.639.0",
+    "csv-string": "^3.1.8",
+    "express": "^4.17.1",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5"
+  },
+  "devDependencies": {}
+}

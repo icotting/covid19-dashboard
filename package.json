@@ -1,0 +1,22 @@
+{
+    "devDependencies": {
+        "lerna": "3.13.1"
+    },
+    "dependencies": {},
+    "scripts": {
+        "bootstrap": "npm install && lerna bootstrap",
+        "bootstrap:ci": "npm ci && lerna bootstrap --ci",
+        "update": "npm update && lerna exec --parallel --no-sort -- npm update",
+        "build": "lerna run prepare && lerna run install && lerna run build && npm run evaluate-license",
+        "test": "lerna run --parallel --no-sort test",
+        "test:watch": "lerna run --parallel --no-sort test:watch",
+        "watch": "lerna run --parallel --no-sort watch",
+        "release": "npm run bootstrap && npm run build && npm run test"
+    },
+    "npm-pretty-much": {
+        "runRelease": "always",
+        "runTest": "release"
+    },
+    "version": "0.0.1",
+    "name": "covid19-dashboard"
+}

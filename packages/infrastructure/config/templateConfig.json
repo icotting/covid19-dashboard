@@ -1,0 +1,7 @@
+{
+    "Parameters" : {
+        "CodeBuildBucket": { "Fn::GetArtifactAtt" : ["BuildOutput", "BucketName"]},
+        "CodeBuildKey": { "Fn::GetArtifactAtt" : ["BuildOutput", "ObjectKey"]}
+    }
+}
+  

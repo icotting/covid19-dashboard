@@ -1,0 +1,5 @@
+*.js
+.jsii
+dist
+*.d.ts
+node_modules

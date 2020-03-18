@@ -1,0 +1,27 @@
+
+version: 0.2
+
+env:
+  variables:
+    CI: "true"
+
+phases:
+  install:
+    commands:
+      
+  pre_build:
+    commands:
+      
+  build:
+    commands:
+      - npm run release
+  post_build:
+    commands:
+
+artifacts:
+  base-directory: packages
+  files:
+    - "infrastructure/build/**/*"
+    - "website/build/**/*"
+    - "lambda/src/**/*"  
+    - "lambda/node_modules/**/*"
