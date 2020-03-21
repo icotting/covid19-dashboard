@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import { Chart } from "react-google-charts";
-import { FluidContainer, Container, Row, Col, FormControl, Form, Button, NavDropdown } from "react-bootstrap"
-import {Navbar, Nav} from "react-bootstrap"
-import countries from './countries.json'
-
+import { Container, Row, Col, Form, NavDropdown } from "react-bootstrap";
+import {Navbar, Nav} from "react-bootstrap";
+import countries from './countries.json';
+import {renderMap} from './CaseHeatMap';
+import {renderTimeline, renderStatus, renderSummary, renderMortalityRates} from "./DataCharts";
 import './Home.css';
 
 class Home extends Component {
@@ -23,7 +23,7 @@ class Home extends Component {
                 colorAxis: { colors: ['white', 'red'] }
             },
             countryList: [{index: 0, value: "Loading ..."}],
-            dateIndex: 55
+            dateIndex: 58
         };
     }
 
@@ -78,11 +78,17 @@ class Home extends Component {
             geo.entries.forEach((entry,i) => { 
                 if (i < this.state.dateIndex) {
                     if (i == global_totals.length) {
-                        global_totals.push([new Date(entry.date).toDateString(), entry.cases-(entry.deaths+entry.recoveries), entry.deaths, entry.recoveries]);
+                        global_totals.push({
+                            date: new Date(entry.date).toDateString(), 
+                            active: entry.cases-(entry.deaths+entry.recoveries), 
+                            cases: entry.cases, 
+                            deaths: entry.deaths, 
+                            recoveries: entry.recoveries});
                     } else {
-                        global_totals[i][1] += entry.cases-(entry.deaths+entry.recoveries);
-                        global_totals[i][2] += entry.deaths;
-                        global_totals[i][3] += entry.recoveries;
+                        global_totals[i].cases += entry.cases;
+                        global_totals[i].active += entry.cases-(entry.deaths+entry.recoveries);
+                        global_totals[i].deaths += entry.deaths;
+                        global_totals[i].recoveries += entry.recoveries;
                     }
                 }
             });
@@ -117,54 +123,50 @@ class Home extends Component {
                     
                     if (markers) {
                         if (r.current > 0) {
-                            case_map.push([country.lat, country.lon, name, r.current]);
-                        }
+                            case_map.push({id: name, latitude: country.lat, longitude: country.lon, value: r.current});
+                       }
                     } else {
-                        if (!this.iso_names[name]) { // don't let them charge me for geo-coding!
-                            console.log(name+"--"+this.iso_names[name]);
-                        } else {
-                            case_map.push([{v: this.iso_names[name], f:name}, r.current]);
-                        }
+                        case_map.push({id: this.iso_names[name], value: r.current});
                     }
 
-                    case_summary.push([name, r.current, r.deaths, r.recoveries]);
+                    case_summary.push({category: name, value1: r.current, value2: r.deaths, value3: r.recoveries});
                     let mt = r.current + r.deaths + r.recoveries;
                     mortality_rates.push(
-                        [
-                            name,
-                            r.deaths/mt, 
-                            r.recoveries/mt,
-                            r.recoveries > r.current ? "Declining" : "Increasing", 
-                            mt
-                        ]
+                        {
+                            title: name,
+                            x: (r.deaths/mt)*100, 
+                            y: (r.recoveries/mt)*100,
+                            value: mt, 
+                            color: r.recoveries > r.current ? "green" : "red", 
+                        }
                     );
                 } else if (filter_match) { //rollup children
                     var total = 0;
-                    var case_totals = [name, 0,0,0];
+                    var case_totals = {category: name, value1: 0, value2: 0, value3: 0};
 
                     for (let [name, region] of Object.entries(country.children)) {
                         let r = process(region.entries);
                         total += r.current;
-                        case_totals[1] += r.current;
-                        case_totals[2] += r.deaths;
-                        case_totals[3] += r.recoveries; 
+                        case_totals.value1 += r.current;
+                        case_totals.value2 += r.deaths;
+                        case_totals.value3 += r.recoveries; 
                     }
 
-                    let mt = case_totals[1]+case_totals[2]+case_totals[3];
+                    let mt = case_totals.value1 + case_totals.value2 + case_totals.value3;
                     mortality_rates.push(
-                        [
-                            name,
-                            case_totals[2]/mt, 
-                            case_totals[3]/mt,
-                            case_totals[3] > case_totals[1] ? "Declining" : "Increasing", 
-                            mt
-                        ]
+                        {
+                            title: name,
+                            x: (case_totals.value2/mt)*100, 
+                            y: (case_totals.value3/mt)*100,
+                            value: mt,
+                            color: case_totals.value3 > case_totals.value1 ? "green" : "red", 
+                        }
                     );
 
                     if (!this.iso_names[name]) {
                         console.log(name+"--"+this.iso_names[name]);
                     } else {
-                        case_map.push([{v: this.iso_names[name], f:name}, total]);
+                        case_map.push({id: this.iso_names[name], value: total});
                     }
                     case_summary.push(case_totals);
                 }
@@ -180,34 +182,30 @@ class Home extends Component {
             }
         }
         
-        var z = 1;
 
-        let s = (x,y) => {
-            if (x[z] > y[z]) {
+        case_summary = case_summary.sort((x,y) => {
+            if (x.value1 > y.value1) {
                 return -1;
-            } else if (x[z] < y[z]) {
+            } else if (x.value1 < y.value1) {
                 return 1;
             } else {
                 return 0;
             }
-        };
+        });
+        
+        mortality_rates = mortality_rates.sort((x,y) => {
+            if (x.value > y.value) {
+                return -1;
+            } else if (x.value < y.value) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
 
-        if (markers) {
-            case_map.unshift(['Latitude', 'Longitude', 'Region', 'Cases']);
-        } else {
-            case_map.unshift(['Country', 'Active Cases']);
-        }
-        case_summary = case_summary.sort(s);
-        case_summary = case_summary.slice(0,11);
-        case_summary.unshift(this.state.caseSummary[0]);
-
-        z = 4;
-        mortality_rates = mortality_rates.sort(s);
-        mortality_rates = mortality_rates.slice(0,11);
-        mortality_rates.unshift(this.state.mortalityRates[0]);
-
-        global_totals.unshift(this.state.globalTimeSeries[0]);
-
+        case_summary = case_summary.slice(0,25);
+        mortality_rates = mortality_rates.slice(0,25);
+        
         let map_opts = this.state.mapOptions;
         if (this.countryFilter != null) {
             map_opts.displayMode = markers ? 'markers' : '';
@@ -230,6 +228,11 @@ class Home extends Component {
         });
 
         country_list.unshift({id: 0, value: "Global"});
+        renderMap(this, case_map, case_summary[0].value1, markers, this.iso_names[this.countryFilter]);
+        renderTimeline(global_totals);
+        renderStatus(global_totals);
+        renderSummary(case_summary);
+        renderMortalityRates(mortality_rates);
 
         return {
             caseMap: case_map, 
@@ -247,14 +250,7 @@ class Home extends Component {
             <Navbar.Brand href="#home">COVID-19 Data Dasbboard</Navbar.Brand>
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                <NavDropdown title="Map Options" id="basic-nav-dropdown">
-                    <NavDropdown.Item selected href="#action/3.1">Show Active Cases</NavDropdown.Item>
-                    <NavDropdown.Item href="#action/3.2">Show Deaths</NavDropdown.Item>
-                    <NavDropdown.Item href="#action/3.3">Show Recovery</NavDropdown.Item>
-                    <NavDropdown.Item href="#action/3.3">Show Total Confirmed Cases</NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
-                </NavDropdown>
+
                 </Nav>
                 <Form inline>
                     <Form.Control as="select" onChange={this.onCountrySelect.bind(this)} ref={ el => this.countrySelect=el}>
@@ -271,80 +267,23 @@ class Home extends Component {
             <Container fluid>
             <Row>
                 <Col sm={12}>
-                    <Chart
-                            width={'100%'}
-                            height={'600px'}
-                            chartType="GeoChart"
-                            data={this.state.caseMap}
-                            mapsApiKey="AIzaSyAJkUR6orJ6uvqaHhcZAQdbB7zqnJ6CqOI"
-                            rootProps={{ 'data-testid': '1' }}
-                            options={this.state.mapOptions}
-                        />
+                <div id="mapdiv" style={{ width: "100%", height: "600px" }}></div>
                 </Col>
             </Row>
             <Row>
+                    <Col sm={8}>
+                        <div id="timelinediv" style={{ width: "100%", height: "400px" }}></div>
+                    </Col>
+                    <Col sm={4}>
+                        <div id="statusdiv" style={{ width: "100%", height: "400px" }}></div>
+                    </Col>
+                </Row>            
+            <Row>
                 <Col sm={6}>
-                    <Chart
-                        width={'100%'}
-                        height={'300px'}
-                        chartType="BarChart"
-                        loader={<div>Loading Chart</div>}
-                        data={this.state.caseSummary}
-                        options={{
-                            title: 'Top Cases of COVID-19',
-                            chartArea: { width: '50%' },
-                            isStacked: true,
-                            hAxis: {
-                            title: 'Total Reported Cases',
-                            minValue: 0,
-                            },
-                            vAxis: {
-                            title: 'Country',
-                            },
-                        }}
-                        // For tests
-                        rootProps={{ 'data-testid': '3' }}/>
-                    </Col>
+                    <div id="summarydiv" style={{ width: "100%", height: "400px" }}></div>
+                </Col>
                     <Col sm={6}>
-                        <Chart
-                                width={'100%'}
-                                height={'300px'}
-                                chartType="BubbleChart"
-                                loader={<div>Loading Chart</div>}
-                                data={this.state.mortalityRates}
-                                options={{
-                                    title:
-                                    'Correlation between mortality, recovery rate ' +
-                                    'and number of confirmed cases',
-                                    hAxis: { title: 'Mortality' },
-                                    vAxis: { title: 'Recovery Rate' },
-                                    bubble: { textStyle: { fontSize: 11 } },
-                                }}
-                                rootProps={{ 'data-testid': '1' }}
-                                />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm={12}>
-                        <Chart
-                            width={'100%'}
-                            height={'400px'}
-                            chartType="LineChart"
-                            loader={<div>Loading Chart</div>}
-                            data={this.state.globalTimeSeries}
-                            options={{
-                                hAxis: {
-                                title: 'Time',
-                                },
-                                vAxis: {
-                                title: 'Popularity',
-                                },
-                                series: {
-                                1: { curveType: 'function' },
-                                },
-                            }}
-                            rootProps={{ 'data-testid': '2' }}
-                            />
+                        <div id="mortalitydiv" style={{ width: "100%", height: "400px" }}></div>
                     </Col>
                 </Row>
             </Container>

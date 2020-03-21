@@ -1,9 +1,6 @@
-var rp = require('request-promise');
-var csv = require('csv-string');
-const aws = require('aws-sdk');
-
-const CACHE_BUCKET = process.env.websiteS3Bucket;
-const s3 = new aws.S3();
+const rp = require('request-promise');
+const csv = require('csv-string');
+const aws_util = require('./util');
 
 let CASES = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv';
 let DEATHS = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv';
@@ -32,27 +29,21 @@ class GeoStat {
 Promise.all([rp(CASES), rp(DEATHS), rp(RECOVERIES)]).then((results) => {
     
     let countries = {};
+    console.log("Processing cases...");
     processStat(csv.parse(results[0]), countries, "CASES");
+    
+    console.log("Processing deaths...");
     processStat(csv.parse(results[1]), countries, "DEATHS");
+    
+    console.log("Processing recoveries...");
     processStat(csv.parse(results[2]), countries, "RECOVERIES");
 
     let case_data = {
         "geoData": countries
     };
 
-    let params = { 
-        Bucket: CACHE_BUCKET,
-        Body: JSON.stringify(case_data),
-        Key: 'covid.json',
-    };
-
-    s3.putObject(params, function(err, data) {
-        if (err) {
-            throw err;
-        } else {
-            return;
-        }
-    });
+    console.log("Uploading to S3...");
+    aws_util.uploadToWebCache('covid.json', JSON.stringify(case_data));
 });
 
 function processStat(data, countries, type) {

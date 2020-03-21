@@ -5,7 +5,7 @@
 const aws = require('aws-sdk')
 const s3 = new aws.S3();
 
-const CACHE_BUCKET = process.env.webCacheBucket;
+const CACHE_BUCKET = process.env.websiteS3Bucket;
 
 exports.uploadToWebCache = (key, data) => {
     let params = { 
