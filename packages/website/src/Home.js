@@ -59,7 +59,7 @@ class Home extends Component {
         return (
             <div>
             <Navbar variant="dark" bg="dark">
-            <Navbar.Brand href="#home">COVID-19 Data Dasbboard</Navbar.Brand>
+            <Navbar.Brand href="#home">COVID-19 Data Dashboard</Navbar.Brand>
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
 
