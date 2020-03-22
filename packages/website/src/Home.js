@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Container, Row, Col, Form, Table  } from "react-bootstrap";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import {Navbar, Nav} from "react-bootstrap";
 import countries from './countries.json';
 import {renderTimeline} from "./helpers/DataCharts";
@@ -29,6 +29,7 @@ class Home extends Component {
                 colorAxis: { colors: ['white', 'red'] }
             },
             countryList: [{index: 0, value: "Loading ..."}],
+            latestDate: ''
         };
         this.globalTotals = null;
         this.dateIndex = -1;
@@ -69,8 +70,9 @@ class Home extends Component {
             <Navbar.Brand href="#home">COVID-19 Data Dashboard</Navbar.Brand>
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-
+                <Button href="https://github.com/CSSEGISandData/COVID-19" variant="primary">Data Current as of: {this.state.latestDate}</Button>
                 </Nav>
+
                 <Form inline>
                     <Form.Control as="select" onChange={this.onCountrySelect.bind(this)} ref={ el => this.countrySelect=el}>
                         {

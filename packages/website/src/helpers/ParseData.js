@@ -7,7 +7,7 @@ export let computeState = (home) => {
     var case_map = [];
     var case_summary = [];
     var mortality_rates = [];
-
+    var latest = null;
     let country_list = [];
 
     let process = (entries) => {
@@ -59,6 +59,7 @@ export let computeState = (home) => {
         if (country.entries && filter_match) {
             if (home.dateIndex === -1) {
                 home.dateIndex = country.entries.length-1;
+                latest = country.entries[home.dateIndex].date;
             }
             process_geo(country);
         }
@@ -201,6 +202,7 @@ export let computeState = (home) => {
         caseMap: case_map, 
         caseSummary: case_summary, 
         mortalityRates: mortality_rates, 
-        countryList: country_list
+        countryList: country_list, 
+        latestDate: new Date(latest).toDateString()
     };
 };
