@@ -1,10 +1,17 @@
 import React, {Component} from 'react';
-import { Container, Row, Col, Form  } from "react-bootstrap";
+import { Container, Row, Col, Form, Table  } from "react-bootstrap";
 import {Navbar, Nav} from "react-bootstrap";
 import countries from './countries.json';
 import {renderTimeline} from "./helpers/DataCharts";
 import './Home.css';
 import {computeState} from "./helpers/ParseData";
+import BootstrapTable from "react-bootstrap-table-next";
+import {formatNumber} from "./helpers/Util";
+
+const tbl_format = (content, row) => {
+    return formatNumber(content);
+};
+
 class Home extends Component {
 
     constructor(props) {
@@ -13,7 +20,7 @@ class Home extends Component {
             caseMap: [
                 ['Country', 'Confirmed Cases']
             ], 
-            caseSummary: [['Country', 'Current Cases', 'Deaths', 'Recovered Cases']], 
+            caseSummary: [], 
             mortalityRates: [['ID', 'Mortality', 'Recovery', 'Status', 'Confirmed Cases']], 
             globalTimeSeries: [['x', 'Active Cases', 'Deaths', 'Recoveries']],
             countryFilter: null, 
@@ -89,7 +96,41 @@ class Home extends Component {
                     <Col sm={4}>
                         <div id="statusdiv" style={{ width: "100%", height: "400px" }}></div>
                     </Col>
-                </Row>            
+            </Row>            
+            <Row>
+                <Col>
+                    <BootstrapTable
+                        keyField="category"
+                        data={this.state.caseSummary}
+                        columns={[
+                            {
+                                dataField: "category", 
+                                text: "Region"
+                            }, 
+                            {
+                                dataField: "value1", 
+                                text: "Active Cases",
+                                formatter: tbl_format
+                            }, 
+                            {
+                                dataField: "delta", 
+                                text: "3-Day Delta", 
+                                formatter: tbl_format
+                            },
+                            {
+                                dataField: "value2", 
+                                text: "Deaths",
+                                formatter: tbl_format
+                            }, 
+                            {
+                                dataField: "value3", 
+                                text: "Recovered",
+                                formatter: tbl_format
+                            }
+                        ]}
+                    />
+                </Col>
+            </Row>
             <Row>
                 <Col sm={6}>
                     <div id="summarydiv" style={{ width: "100%", height: "400px" }}></div>
@@ -97,7 +138,7 @@ class Home extends Component {
                     <Col sm={6}>
                         <div id="mortalitydiv" style={{ width: "100%", height: "400px" }}></div>
                     </Col>
-                </Row>
+            </Row>
             </Container>
             </div>
         );

@@ -12,6 +12,7 @@ export let computeState = (home) => {
 
     let process = (entries) => {
         let last = entries[home.dateIndex];
+        let prior = home.dateIndex - 3 > 0 ? entries[home.dateIndex-3] : entries[0];
         if (last) {
             let current = last.cases - (last.recoveries + last.deaths);
             return { 
@@ -19,7 +20,8 @@ export let computeState = (home) => {
                 total: last.cases, 
                 deaths: last.deaths, 
                 recoveries: last.recoveries, 
-                mortality: last.deaths/last.cases
+                mortality: last.deaths/last.cases,
+                delta: current - (prior.cases - (prior.recoveries + prior.deaths))
             };
         } else {
             return 0;
@@ -84,7 +86,7 @@ export let computeState = (home) => {
                 case_map.push({id: home.iso_names[name], value: r.current});
             }
 
-            case_summary.push({category: name, value1: r.current, value2: r.deaths, value3: r.recoveries});
+            case_summary.push({category: name, value1: r.current, value2: r.deaths, value3: r.recoveries, delta: r.delta});
             let mt = r.current + r.deaths + r.recoveries;
             mortality_rates.push(
                 {
@@ -98,7 +100,7 @@ export let computeState = (home) => {
             );
         } else if (filter_match) { //rollup children
             var total = 0;
-            var case_totals = {category: name, value1: 0, value2: 0, value3: 0};
+            var case_totals = {category: name, value1: 0, value2: 0, value3: 0, delta: 0};
 
             for (let region of Object.values(country.children)) {
                 let r = process(region.entries);
@@ -106,6 +108,7 @@ export let computeState = (home) => {
                 case_totals.value1 += r.current;
                 case_totals.value2 += r.deaths;
                 case_totals.value3 += r.recoveries; 
+                case_totals.delta += r.delta;
             }
 
             let mt = case_totals.value1 + case_totals.value2 + case_totals.value3;
