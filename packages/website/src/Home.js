@@ -100,6 +100,14 @@ class Home extends Component {
                     </Col>
             </Row>            
             <Row>
+                <Col sm={6}>
+                    <div id="summarydiv" style={{ width: "100%", height: "400px" }}></div>
+                </Col>
+                    <Col sm={6}>
+                        <div id="mortalitydiv" style={{ width: "100%", height: "400px" }}></div>
+                    </Col>
+            </Row>
+            <Row>
                 <Col>
                     <BootstrapTable
                         keyField="category"
@@ -132,14 +140,6 @@ class Home extends Component {
                         ]}
                     />
                 </Col>
-            </Row>
-            <Row>
-                <Col sm={6}>
-                    <div id="summarydiv" style={{ width: "100%", height: "400px" }}></div>
-                </Col>
-                    <Col sm={6}>
-                        <div id="mortalitydiv" style={{ width: "100%", height: "400px" }}></div>
-                    </Col>
             </Row>
             </Container>
             </div>
