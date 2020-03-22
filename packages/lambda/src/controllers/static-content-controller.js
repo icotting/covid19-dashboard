@@ -31,14 +31,15 @@ const getContent = (resolve, reject, urlPath) => {
     Key: urlPath
   };
 
+  console.log(params);
+
   s3.getObject(params, function(err, data) {
         if (err) {
             console.error("getContent(" + urlPath + ") => " + err);
             resolve(base.NotFound(params.Key));
         } else {
             let mimeType = mime.lookup(urlPath);
-            console.log("File: "+urlPath+" - Type: "+mimeType);
-
+            
             if (mimeType === 'image/png' ||
                     mimeType === 'image/jpeg' ||
                     mimeType === 'image/x-icon') {

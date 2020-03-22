@@ -9,9 +9,7 @@ exports.route = async (path) => {
     if (path.startsWith("/api/v1")) {
         try {
             let controller_path = path.substring(7); 
-            console.log(controller_path);
-            //TODO implement any API routes that might be needed
-            return base.NotFound(path);
+            return base.response(200, JSON.stringify({path: controller_path, message: "hello world"}), "application/json");
         } catch (e) {
             return base.Error(e);
         }
