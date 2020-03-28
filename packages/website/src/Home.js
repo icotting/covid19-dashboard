@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, ButtonGroup } from "react-bootstrap";
 import {Navbar, Nav} from "react-bootstrap";
 import countries from './countries.json';
 import {renderTimeline} from "./helpers/DataCharts";
@@ -33,6 +33,7 @@ class Home extends Component {
         };
         this.globalTotals = null;
         this.dateIndex = -1;
+        this.mapType = "cases";
     }
 
     componentDidMount() {
@@ -63,6 +64,13 @@ class Home extends Component {
         this.setState(computeState(this));
     }
 
+    onMapTypeSelect(type) {
+        if (this.caseData) {
+            this.mapType = type;
+            this.setState(computeState(this));
+        }
+    }
+
     render() {
         return (
             <div>
@@ -70,7 +78,7 @@ class Home extends Component {
             <Navbar.Brand href="#home">COVID-19 Data Dashboard</Navbar.Brand>
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                <Button href="https://github.com/CSSEGISandData/COVID-19" variant="primary">Data Current as of: {this.state.latestDate}</Button>
+                <Button href="https://github.com/CSSEGISandData/COVID-19" variant="secondary">Data Current as of: {this.state.latestDate}</Button>
                 </Nav>
 
                 <Form inline>
@@ -84,7 +92,19 @@ class Home extends Component {
                 </Form>
                 </Navbar.Collapse>
             </Navbar>
-
+            <div id="mapControls"> 
+            <ButtonGroup aria-label="Basic example">
+                <Button size="sm" variant="outline-primary" onClick={(e) => {
+                        this.onMapTypeSelect('cases');}
+                    }>Active Cases</Button>{' '}
+                <Button size="sm" variant="outline-danger" onClick={(e) => {
+                        this.onMapTypeSelect('deaths');}
+                    }>Deaths</Button>{' '}
+                <Button size="sm" variant="outline-success" onClick={(e) => {
+                        this.onMapTypeSelect('recoveries');}
+                    }>Recoveries</Button>{' '}
+            </ButtonGroup>
+            </div>
             <Container fluid>
             <Row>
                 <Col sm={12}>

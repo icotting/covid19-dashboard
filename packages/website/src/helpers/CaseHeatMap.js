@@ -14,20 +14,15 @@ var legendMax = null;
 var markerSeries = null;
 var currentCountry = null;
 
-export let renderMap = (home, caseMapData, maxValue, markers, zoomCountry) => {
+export let renderMap = (home, caseMapData, maxValue, markers, zoomCountry) => {    
+    let mapColor = home.mapType === "recoveries" ? dashboardColors.recoveries : home.mapType === "deaths" ? dashboardColors.deaths : dashboardColors.activeCases;
+
     if (!chart) {
         chart = am4core.create("mapdiv", am4maps.MapChart);
         chart.geodata = am4geodata_worldLow;
         chart.projection = new am4maps.projections.Mercator();
 
         polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
-
-        polygonSeries.heatRules.push({
-            property: "fill",
-            target: polygonSeries.mapPolygons.template,
-            min: am4core.color("white"),
-            max: am4core.color(dashboardColors.activeCases).brighten(1)
-        });
     
         polygonSeries.exclude = ["AQ"];
     
@@ -67,6 +62,13 @@ export let renderMap = (home, caseMapData, maxValue, markers, zoomCountry) => {
             }
         });
     }
+
+    polygonSeries.heatRules.push({
+        property: "fill",
+        target: polygonSeries.mapPolygons.template,
+        min: am4core.color("white"),
+        max: am4core.color(mapColor).brighten(1)
+    });
 
     legend.marginRight = am4core.percent(4);
     legend.minValue = 0;
@@ -111,7 +113,7 @@ export let renderMap = (home, caseMapData, maxValue, markers, zoomCountry) => {
             target: circle,
             property: "fill", 
             min: am4core.color("white").brighten(1),
-            max: am4core.color(dashboardColors.activeCases).brighten(0)
+            max: am4core.color(mapColor).brighten(0)
           });
 
           markerSeries.heatRules.push({

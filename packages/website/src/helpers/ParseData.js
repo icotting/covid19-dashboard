@@ -75,16 +75,19 @@ export let computeState = (home) => {
         }
     };
 
+    var max = 0;
     let main_body = (name, country, filter_match) => {
         if (country.entries.length > 0 && filter_match) {
             let r = process(country.entries);
-            
+            let val = home.mapType === "recoveries" ? r.recoveries : home.mapType === "deaths" ? r.deaths : r.current;
+            max = val > max ? val : max; 
+
             if (markers) {
-                if (r.current > 0) {
-                    case_map.push({id: name, latitude: country.lat, longitude: country.lon, value: r.current});
+                if (val > 0) {
+                    case_map.push({id: name, latitude: country.lat, longitude: country.lon, value: val});
                }
             } else {
-                case_map.push({id: home.iso_names[name], value: r.current});
+                case_map.push({id: home.iso_names[name], value: val});
             }
 
             case_summary.push({category: name, value1: r.current, value2: r.deaths, value3: r.recoveries, delta: r.delta});
@@ -105,11 +108,13 @@ export let computeState = (home) => {
 
             for (let region of Object.values(country.children)) {
                 let r = process(region.entries);
-                total += r.current;
+                total += home.mapType === "recoveries" ? r.recoveries : home.mapType === "deaths" ? r.deaths : r.current;
                 case_totals.value1 += r.current;
                 case_totals.value2 += r.deaths;
                 case_totals.value3 += r.recoveries; 
                 case_totals.delta += r.delta;
+
+                max = total > max ? total : max;
             }
 
             let mt = case_totals.value1 + case_totals.value2 + case_totals.value3;
@@ -192,7 +197,7 @@ export let computeState = (home) => {
     });
 
     country_list.unshift({id: 0, value: "Global"});
-    renderMap(home, case_map, case_summary[0].value1, markers, home.iso_names[home.countryFilter]);
+    renderMap(home, case_map, max, markers, home.iso_names[home.countryFilter]);
     renderStatus(global_totals);
     renderSummary(case_summary);
     renderMortalityRates(mortality_rates);

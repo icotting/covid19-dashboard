@@ -6,3 +6,15 @@
 #pageTitle {
     color: #dd6b10;
 }
+
+#mapControls { 
+    position: absolute; 
+    top: 65px; 
+    left: 20px;
+    z-index: 100;
+    font-size: 12pt;
+}
+
+#mapControls span {
+    font-weight: bolder;
+}
