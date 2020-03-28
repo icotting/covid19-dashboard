@@ -172,7 +172,7 @@ export let computeState = (home) => {
         }
     });
 
-    case_summary = case_summary.slice(0,25);
+    let top_case_summary = case_summary.slice(0,25);
     mortality_rates = mortality_rates.slice(0,25);
     
     let map_opts = home.state.mapOptions;
@@ -199,13 +199,14 @@ export let computeState = (home) => {
     country_list.unshift({id: 0, value: "Global"});
     renderMap(home, case_map, max, markers, home.iso_names[home.countryFilter]);
     renderStatus(global_totals);
-    renderSummary(case_summary);
+    renderSummary(top_case_summary);
     renderMortalityRates(mortality_rates);
     home.globalTotals = global_totals;
 
     return {
         caseMap: case_map, 
-        caseSummary: case_summary, 
+        caseSummary: top_case_summary, 
+        fullCaseSummary: case_summary,
         mortalityRates: mortality_rates, 
         countryList: country_list, 
         latestDate: new Date(latest).toDateString()

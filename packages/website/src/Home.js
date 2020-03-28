@@ -21,6 +21,7 @@ class Home extends Component {
                 ['Country', 'Confirmed Cases']
             ], 
             caseSummary: [], 
+            fullCaseSummary: [],
             mortalityRates: [['ID', 'Mortality', 'Recovery', 'Status', 'Confirmed Cases']], 
             globalTimeSeries: [['x', 'Active Cases', 'Deaths', 'Recoveries']],
             countryFilter: null, 
@@ -131,7 +132,7 @@ class Home extends Component {
                 <Col>
                     <BootstrapTable
                         keyField="category"
-                        data={this.state.caseSummary}
+                        data={this.state.fullCaseSummary}
                         columns={[
                             {
                                 dataField: "category", 
