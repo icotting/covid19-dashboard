@@ -1,6 +1,7 @@
 import {dashboardColors} from "./Util";
 import {renderMap} from './CaseHeatMap';
 import {renderStatus, renderSummary, renderMortalityRates} from "./DataCharts";
+import population from '../population.json';
 
 export let computeState = (home) => {
 
@@ -170,6 +171,19 @@ export let computeState = (home) => {
         } else {
             return 0;
         }
+    });
+
+    case_summary = case_summary.map((c) => {
+        let country = home.iso_names[c.category]; 
+        let pop = population[country] ? population[country] : -1;
+        return { 
+            category: c.category, 
+            value1: c.value1, 
+            value2: c.value2, 
+            value3: c.value3, 
+            delta: c.delta, 
+            percent: parseFloat(c.value1) / parseFloat(pop)
+        };
     });
 
     let top_case_summary = case_summary.slice(0,25);

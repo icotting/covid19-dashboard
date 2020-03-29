@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Container, Row, Col, Form, Button, ButtonGroup } from "react-bootstrap";
 import {Navbar, Nav} from "react-bootstrap";
 import countries from './countries.json';
+
 import {renderTimeline} from "./helpers/DataCharts";
 import './Home.css';
 import {computeState} from "./helpers/ParseData";
@@ -10,6 +11,14 @@ import {formatNumber} from "./helpers/Util";
 
 const tbl_format = (content, row) => {
     return formatNumber(content);
+};
+
+const percent_format = (content, row) => {
+    if (content < 0) {
+        return "-";
+    } else { 
+        return (content * 100).toFixed(4) + "%";
+    }
 };
 
 class Home extends Component {
@@ -143,6 +152,11 @@ class Home extends Component {
                                 text: "Active Cases",
                                 formatter: tbl_format
                             }, 
+                            {
+                                dataField: "percent", 
+                                text: "Percent of Population", 
+                                formatter: percent_format
+                            },
                             {
                                 dataField: "delta", 
                                 text: "3-Day Delta", 
