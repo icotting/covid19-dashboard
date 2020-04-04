@@ -1,3 +1,8 @@
 const dataManager = require('./data');
 
-dataManager.importData();
+let run = async () => {
+    let data = await dataManager.importData();
+    console.log(data);
+}
+
+run();

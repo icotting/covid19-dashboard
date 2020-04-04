@@ -27,24 +27,29 @@ class GeoStat {
 }
 
 exports.importData = () => {
-    Promise.all([rp(CASES), rp(DEATHS), rp(RECOVERIES)]).then((results) => {
+    return new Promise((resolve, reject) => {
+        Promise.all([rp(CASES), rp(DEATHS), rp(RECOVERIES)]).then((results) => {
         
-        let countries = {};
-        console.log("Processing cases...");
-        processStat(csv.parse(results[0]), countries, "CASES");
-        
-        console.log("Processing deaths...");
-        processStat(csv.parse(results[1]), countries, "DEATHS");
-        
-        console.log("Processing recoveries...");
-        processStat(csv.parse(results[2]), countries, "RECOVERIES");
-
-        let case_data = {
-            "geoData": countries
-        };
-
-        console.log("Uploading to S3...");
-        aws_util.uploadToWebCache('covid.json', JSON.stringify(case_data));
+            let countries = {};
+            console.log("Processing cases...");
+            processStat(csv.parse(results[0]), countries, "CASES");
+            
+            console.log("Processing deaths...");
+            processStat(csv.parse(results[1]), countries, "DEATHS");
+            
+            console.log("Processing recoveries...");
+            processStat(csv.parse(results[2]), countries, "RECOVERIES");
+    
+            let case_data = {
+                "geoData": countries
+            };
+    
+            let data = JSON.stringify(case_data);
+            console.log("Uploading to S3...");
+            aws_util.uploadToWebCache('covid.json', data);
+    
+            resolve(data);
+        });        
     });
 };
 
