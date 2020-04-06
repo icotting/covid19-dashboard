@@ -2,7 +2,9 @@
     "devDependencies": {
         "lerna": "3.13.1"
     },
-    "dependencies": {},
+    "dependencies": {
+        "react-scripts": "^3.4.1"
+    },
     "scripts": {
         "bootstrap": "npm install && lerna bootstrap",
         "bootstrap:ci": "npm ci && lerna bootstrap --ci",
