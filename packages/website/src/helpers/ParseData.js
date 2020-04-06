@@ -33,7 +33,7 @@ export let computeState = (home) => {
     
     let process_geo = (geo) => {
         geo.entries.forEach((entry,i) => {
-            if (i < home.dateIndex) {
+            if (i <= home.dateIndex) {
                 if (i === global_totals.length) {
                     global_totals.push({
                         date: new Date(entry.date).toDateString(), 
@@ -223,6 +223,6 @@ export let computeState = (home) => {
         fullCaseSummary: case_summary,
         mortalityRates: mortality_rates, 
         countryList: country_list, 
-        latestDate: new Date(latest).toDateString()
+        latestDate: home.state.latestDate ? home.state.latestDate : new Date(latest).toDateString()
     };
 };

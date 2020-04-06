@@ -117,7 +117,7 @@ export let renderStatus = (status) => {
     statusChart.data = [
         {sector: "Deaths", size: record.deaths }, 
         {sector: "Recoveries", size: record.recoveries },
-        {sector: "Active Cases", size: record.cases }
+        {sector: "Active Cases", size: record.active }
     ];
 };
 
@@ -156,7 +156,6 @@ export let renderSummary = (summary) => {
             series1.name = name;
             series1.dataFields.categoryX = "category";
             series1.dataFields.valueY = value;
-            series1.dataFields.valueYShow = "total";
             series1.dataItems.template.locations.categoryX = 0.5;
             series1.stacked = true;
             series1.tooltip.pointerOrientation = "vertical";
