@@ -1,7 +1,8 @@
 import {dashboardColors} from "./Util";
 import {renderMap} from './CaseHeatMap';
-import {renderStatus, renderSummary, renderMortalityRates} from "./DataCharts";
+import {renderSummary, renderMortalityRates} from "./DataCharts";
 import population from '../population.json';
+import {formatNumber} from "./Util";
 
 export let computeState = (home) => {
 
@@ -186,8 +187,8 @@ export let computeState = (home) => {
         };
     });
 
-    let top_case_summary = case_summary.slice(0,25);
-    mortality_rates = mortality_rates.slice(0,25);
+    let top_case_summary = case_summary.slice(0,10);
+    mortality_rates = mortality_rates.slice(0,50);
     
     let map_opts = home.state.mapOptions;
     if (home.countryFilter != null) {
@@ -212,12 +213,16 @@ export let computeState = (home) => {
 
     country_list.unshift({id: 0, value: "Global"});
     renderMap(home, case_map, max, markers, home.iso_names[home.countryFilter]);
-    renderStatus(global_totals);
     renderSummary(top_case_summary);
     renderMortalityRates(mortality_rates);
     home.globalTotals = global_totals;
 
+    let totals = global_totals[global_totals.length-1];
+
     return {
+        activeCases: formatNumber(totals.active), 
+        deaths: formatNumber(totals.deaths), 
+        recoveries: formatNumber(totals.recoveries),
         caseMap: case_map, 
         caseSummary: top_case_summary, 
         fullCaseSummary: case_summary,

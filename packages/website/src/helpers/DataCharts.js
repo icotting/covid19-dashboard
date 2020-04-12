@@ -1,7 +1,7 @@
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import {formatNumber, dashboardColors} from "./Util";
+import {dashboardColors} from "./Util";
 
 am4core.useTheme(am4themes_animated);
 
@@ -74,53 +74,6 @@ export let renderTimeline = (home, caseData) => {
     timeLineChart.data = caseData;
 };
 
-var statusChart = null;
-var statusLabel = null;
-export let renderStatus = (status) => {
-
-    if (!statusChart) {
-        // Create chart instance
-        statusChart = am4core.create("statusdiv", am4charts.PieChart);
-        statusChart.startAngle = 160;
-        statusChart.endAngle = 380;
-
-                // Add label
-        statusChart.innerRadius = 150;
-        statusLabel = statusChart.seriesContainer.createChild(am4core.Label);
-
-        statusLabel.horizontalCenter = "middle";
-        statusLabel.verticalCenter = "middle";
-        statusLabel.textAlign = "middle";
-        statusLabel.fontSize = 35;
-        statusLabel.fill = "#999999";
-
-        // Add and configure Series
-        var pieSeries = statusChart.series.push(new am4charts.PieSeries());
-        pieSeries.dataFields.value = "size";
-        pieSeries.dataFields.category = "sector";
-        pieSeries.labels.template.disabled = true;
-        pieSeries.ticks.template.disabled = true;
-
-        var colorSet = new am4core.ColorSet();
-            colorSet.list = [dashboardColors.deaths, dashboardColors.recoveries, dashboardColors.activeCases].map(function(color) {
-            let c = new am4core.color(color);
-            c.alpha = 0.7;
-            return c;
-        });
-        pieSeries.colors = colorSet;
-    }
-
-    let record = status[status.length-1];
-    statusLabel.text = "Total Cases \n"+formatNumber(record.cases);
-
-    // Add data
-    statusChart.data = [
-        {sector: "Deaths", size: record.deaths }, 
-        {sector: "Recoveries", size: record.recoveries },
-        {sector: "Active Cases", size: record.active }
-    ];
-};
-
 var summaryChart;
 export let renderSummary = (summary) => {
 
@@ -129,7 +82,7 @@ export let renderSummary = (summary) => {
         summaryChart.hiddenState.properties.opacity = 0; // this creates initial fade-in
     
         let title = summaryChart.titles.create();
-        title.text = "Top 20 Regions by Active Cases";
+        title.text = "Top 10 Regions by Active Cases";
         title.fontSize = 16;
         title.marginBottom = 4;
         title.fontWeight = "700";

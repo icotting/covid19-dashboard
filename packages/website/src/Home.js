@@ -117,8 +117,11 @@ class Home extends Component {
             </div>
             <Container fluid>
             <Row>
-                <Col sm={12}>
-                <div id="mapdiv" style={{ width: "100%", height: "600px" }}></div>
+                <Col sm={8}>
+                    <div id="mapdiv" style={{ width: "100%", height: "400px" }}></div>
+                </Col>
+                <Col sm={4}>
+                    <div id="summarydiv" style={{ width: "100%", height: "400px" }}></div>
                 </Col>
             </Row>
             <Row>
@@ -126,16 +129,28 @@ class Home extends Component {
                         <div id="timelinediv" style={{ width: "100%", height: "400px" }}></div>
                     </Col>
                     <Col sm={4}>
-                        <div id="statusdiv" style={{ width: "100%", height: "400px" }}></div>
-                    </Col>
-            </Row>            
-            <Row>
-                <Col sm={6}>
-                    <div id="summarydiv" style={{ width: "100%", height: "400px" }}></div>
-                </Col>
-                    <Col sm={6}>
                         <div id="mortalitydiv" style={{ width: "100%", height: "400px" }}></div>
                     </Col>
+            </Row>
+            <Row>
+                <Col sm={4}>
+                    <h3>
+                        Active Cases:&nbsp;&nbsp;&nbsp;
+                        <small class="text-muted">{this.state.activeCases}</small>
+                    </h3>
+                </Col>
+                <Col sm={4}>
+                    <h3>
+                        Deaths:&nbsp;&nbsp;&nbsp;
+                        <small class="text-muted">{this.state.deaths}</small>
+                    </h3>
+                </Col>
+                <Col sm={4}>
+                    <h3>
+                        Recoveries:&nbsp;&nbsp;&nbsp;
+                        <small class="text-muted">{this.state.recoveries}</small>
+                    </h3>
+                </Col>
             </Row>
             <Row>
                 <Col>
