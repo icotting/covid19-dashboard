@@ -26,6 +26,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run build
+    - run: cd packages/lambda && zip -r package.zip *
+    - run: cd ../../
       env:
         CI: true
     - name: Deploy Web
@@ -36,12 +38,10 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
         SOURCE_DIR: "packages/website/build"
-    - name: Package Lambda
-      run: cd packages/lambda && zip -r package.zip *
     - name: Deploy Lambda
       uses: yvesgurcan/deploy-lambda-function
       with:
-        package: packate.zip
+        package: packages/lambda/package.zip
         function-name: Covid19Dashboard
         AWS_REGION: ${{ secrets.AWS_REGION }}
         AWS_SECRET_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
