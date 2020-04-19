@@ -47,11 +47,10 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        fetch('/covid.json', {
+        fetch('/covid2.json', {
             credentials: "same-origin"
         }).then((res) => res.json()).then((data) => {
             this.caseData = data;
-
             this.iso_names = {};
 
             countries.forEach((country) => {
@@ -136,19 +135,19 @@ class Home extends Component {
                 <Col sm={4}>
                     <h3>
                         Active Cases:&nbsp;&nbsp;&nbsp;
-                        <small class="text-muted">{this.state.activeCases}</small>
+                        <small className="text-muted">{this.state.activeCases}</small>
                     </h3>
                 </Col>
                 <Col sm={4}>
                     <h3>
                         Deaths:&nbsp;&nbsp;&nbsp;
-                        <small class="text-muted">{this.state.deaths}</small>
+                        <small className="text-muted">{this.state.deaths}</small>
                     </h3>
                 </Col>
                 <Col sm={4}>
                     <h3>
                         Recoveries:&nbsp;&nbsp;&nbsp;
-                        <small class="text-muted">{this.state.recoveries}</small>
+                        <small className="text-muted">{this.state.recoveries}</small>
                     </h3>
                 </Col>
             </Row>

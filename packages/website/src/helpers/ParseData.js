@@ -44,7 +44,7 @@ export let computeState = (home) => {
                         recoveries: entry.recoveries});
                 } else {
                     global_totals[i].cases += entry.cases;
-                    global_totals[i].active += entry.cases-(entry.deaths+entry.recoveries);
+                    global_totals[i].active += (entry.cases-(entry.deaths+entry.recoveries));
                     global_totals[i].deaths += entry.deaths;
                     global_totals[i].recoveries += entry.recoveries;
                 }
@@ -56,24 +56,21 @@ export let computeState = (home) => {
     var markers = false;
     for (let [name, country] of Object.entries(home.caseData.geoData)) {
         country_list.push({ id: c_index++, value: name });
-        let filter_match = (home.countryFilter == null || country.name === home.countryFilter);
+        let filter_match = (home.countryFilter != null && country.name === home.countryFilter);
         
-        if (country.entries && filter_match) {
-            if (home.dateIndex === -1) {
-                home.dateIndex = country.entries.length-1;
-                latest = country.entries[home.dateIndex].date;
-            }
-            process_geo(country);
-        }
-
-        if (country.children && filter_match) {
-
+        if (Object.keys(country.children).length > 0 && filter_match) {
             for (let child of Object.values(country.children)) {
                 if (child) {
                     markers = home.countryFilter != null ? true : false;
                     process_geo(child);
                 }
             }
+        } else if ((country.entries.length > 0 && filter_match) || home.countryFilter == null) {
+            if (home.dateIndex === -1) {                
+                home.dateIndex = country.entries.length-1;
+                latest = country.entries[home.dateIndex].date;
+            }
+            process_geo(country);
         }
     };
 
@@ -104,45 +101,11 @@ export let computeState = (home) => {
                     color: r.recoveries > r.current ? dashboardColors.recoveries : dashboardColors.deaths, 
                 }
             );
-        } else if (filter_match) { //rollup children
-            var total = 0;
-            var case_totals = {category: name, value1: 0, value2: 0, value3: 0, delta: 0};
-
-            for (let region of Object.values(country.children)) {
-                let r = process(region.entries);
-                total += home.mapType === "recoveries" ? r.recoveries : home.mapType === "deaths" ? r.deaths : r.current;
-                case_totals.value1 += r.current;
-                case_totals.value2 += r.deaths;
-                case_totals.value3 += r.recoveries; 
-                case_totals.delta += r.delta;
-
-                max = total > max ? total : max;
-            }
-
-            let mt = case_totals.value1 + case_totals.value2 + case_totals.value3;
-            mortality_rates.push(
-                {
-                    title: name,
-                    x: (case_totals.value2/mt)*100, 
-                    y: (case_totals.value3/mt)*100,
-                    value: mt,
-                    rate: case_totals.value3 > case_totals.value1 ? "Declining" : "Increasing",
-                    color: case_totals.value3 > case_totals.value1 ? dashboardColors.recoveries : dashboardColors.dea, 
-                }
-            );
-
-            if (!home.iso_names[name]) {
-                console.log(name+"--"+home.iso_names[name]);
-            } else {
-                case_map.push({id: home.iso_names[name], value: total});
-            }
-            case_summary.push(case_totals);
         }
     };
 
 
     for (let [name, country] of Object.entries(home.caseData.geoData)) {
-
         let filter_match = (home.countryFilter == null || country.name === home.countryFilter);
         if (home.countryFilter != null && filter_match && Object.values(country.children).length > 0) {
             for (let [regionName, region] of Object.entries(country.children)) {
