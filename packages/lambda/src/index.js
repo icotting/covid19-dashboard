@@ -4,7 +4,7 @@
 
 const static = require('./controllers/static-content-controller');
 const router = require('./router');
-const dataManager = require('./data');
+const dataManager = require('./dataConsumer');
 
 exports.handler = async (event) => {
     try {
