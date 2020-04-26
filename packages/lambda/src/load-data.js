@@ -1,7 +1,7 @@
 const dataManager = require('./dataConsumer');
 
 let run = async () => {
-    await dataManager.importData();
+    console.log(await dataManager.importData());
 }
 
 run();

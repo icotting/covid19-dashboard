@@ -71,7 +71,24 @@ exports.importData = () => {
                     console.log("Uploading to S3...");
                     aws_util.uploadToWebCache('covid2.json', data);
                     
-                    resolve(data);
+                    var end = new Date('01-01-1970');
+                    var start = new Date();
+                    var entries = 0;
+            
+                    for (let [name, country] of Object.entries(top)) {
+                        country.entries.forEach((entry) => {
+                            entries++; 
+                            end = (entry.date > end) ? entry.date : end;
+                            start = (entry.date < start) ? entry.date : start;
+                        });
+                    }
+            
+                    resolve({
+                        status: "Success", 
+                        startDate: start,
+                        endDate: end,
+                        totalRecords: entries
+                    });
                 }
             });
         };

@@ -31,8 +31,6 @@ const getContent = (resolve, reject, urlPath) => {
     Key: urlPath
   };
 
-  console.log(params);
-
   s3.getObject(params, function(err, data) {
         if (err) {
             console.error("getContent(" + urlPath + ") => " + err);
