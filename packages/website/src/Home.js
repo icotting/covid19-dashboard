@@ -50,6 +50,7 @@ class Home extends Component {
         fetch('/covid2.json', {
             credentials: "same-origin"
         }).then((res) => res.json()).then((data) => {
+            console.log(data);
             this.caseData = data;
             this.iso_names = {};
 
