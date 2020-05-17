@@ -47,7 +47,7 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        fetch('/covid2.json', {
+        fetch('https://covid-dashboard.s3-us-west-2.amazonaws.com/covid2.json', {
             credentials: "same-origin"
         }).then((res) => res.json()).then((data) => {
             console.log(data);

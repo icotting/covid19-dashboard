@@ -11,7 +11,8 @@ exports.uploadToWebCache = (key, data) => {
     let params = { 
         Bucket: CACHE_BUCKET,
         Body: data,
-        Key: key
+        Key: key, 
+        ACL: 'public-read'
       };
 
       s3.putObject(params, function(err, data) {
