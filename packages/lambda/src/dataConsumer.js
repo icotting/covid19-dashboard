@@ -7,13 +7,14 @@ let CHANGE_INDEX = 20;
 let START_DATE = new Date(2020, 2, 1); 
 
 class GeoValue {
-    constructor(name, lat, lon, index, data) {
+    constructor(name, lat, lon, index, data, subName) {
         this.children = {};
         this.entries = [];
         this.unclassified = [];
         this.name = name;
         this.lat = lat;
         this.lon = lon;
+        this.subName = subName;
 
         var date = new Date(START_DATE);
 
@@ -136,6 +137,8 @@ function processStat(data, countries, date, index) {
 
         let country_name = index > CHANGE_INDEX ? cleanCountryName(row[3]) : cleanCountryName(row[1]);
         var region_name = index > CHANGE_INDEX ? row[2] : row[0];
+        let muni_name = index > CHANGE_INDEX ? row[1] : '';
+
         region_name = region_name == "" ? null : region_name;
         
         let lat = index > CHANGE_INDEX ? parseFloat(row[5]) : parseFloat(row[6]);
@@ -149,7 +152,7 @@ function processStat(data, countries, date, index) {
         
         if (!country) {
             console.log("Create new country "+country_name);
-            country = new GeoValue(country_name, lat, lon, index);
+            country = new GeoValue(country_name, lat, lon, index, muni_name);
             countries[country_name] = country;
         }
 

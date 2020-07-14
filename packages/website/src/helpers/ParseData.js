@@ -146,7 +146,7 @@ export let computeState = (home) => {
             value2: c.value2, 
             value3: c.value3, 
             delta: c.delta, 
-            percent: parseFloat(c.value1) / parseFloat(pop)
+            percent: (home.countryFilter) || c.value1 <= 0 ? -99 : parseFloat(c.value1) / parseFloat(pop)
         };
     });
 

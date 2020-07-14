@@ -17,7 +17,7 @@ const percent_format = (content, row) => {
     if (content < 0) {
         return "-";
     } else { 
-        return (content * 100).toFixed(4) + "%";
+        return "1 out of "+formatNumber((1/content).toFixed(0))+" people";
     }
 };
 
@@ -169,7 +169,7 @@ class Home extends Component {
                             }, 
                             {
                                 dataField: "percent", 
-                                text: "Percent of Population", 
+                                text: "Currently Infected", 
                                 formatter: percent_format
                             },
                             {
